@@ -1,0 +1,208 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(uuid())
+  username     String    @unique @db.NVarChar(50)
+  email        String    @unique @db.NVarChar(100)
+  passwordHash String    @db.NVarChar(255)
+  displayName  String    @db.NVarChar(100)
+  avatarUrl    String?   @db.NVarChar(255)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime? @updatedAt
+  role         String    @default("user") @db.NVarChar(20)
+  isActive     Boolean   @default(true)
+  isBanned     Boolean   @default(false)
+  banReason    String?   @db.NVarChar(255)
+
+  // Relations
+  stories          Story[]
+  following        Follow[]         @relation("Follower")
+  followers        Follow[]         @relation("Following")
+  readingHistories ReadingHistory[]
+  bookmarks        Bookmark[]
+  reviews          Review[]
+  comments         Comment[]
+  notificationsSent Notification[] @relation("Sender")
+  notificationsReceived Notification[] @relation("Receiver")
+
+  @@map("users")
+}
+
+model Follow {
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("Follower", fields: [followerId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  following User @relation("Following", fields: [followingId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+
+  @@id([followerId, followingId])
+  @@map("follows")
+}
+
+model Category {
+  id   String @id @default(uuid())
+  slug String @unique @db.NVarChar(100)
+  name String @db.NVarChar(100)
+
+  stories StoryCategory[]
+
+  @@map("categories")
+}
+
+model Story {
+  id               String    @id @default(uuid())
+  uploaderId       String
+  title            String    @db.NVarChar(255)
+  slug             String    @unique @db.NVarChar(255)
+  coverUrl         String?   @db.NVarChar(255)
+  summary          String?   @db.NVarChar(Max)
+  viewCount        Int       @default(0)
+  reviewCount      Int       @default(0)
+  chapterCount     Int       @default(0)
+  averageRating    Float     @default(0)
+  moderationStatus String    @default("draft") @db.NVarChar(20)
+  writingStatus    String    @default("ongoing") @db.NVarChar(20)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime? @updatedAt
+
+  uploader         User             @relation(fields: [uploaderId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  categories       StoryCategory[]
+  chapters         Chapter[]
+  readingHistories ReadingHistory[]
+  bookmarks        Bookmark[]
+  reviews          Review[]
+  comments         Comment[]
+  viewLogs         StoryViewLog[]
+
+  @@map("stories")
+}
+
+model StoryCategory {
+  storyId    String
+  categoryId String
+
+  story    Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([storyId, categoryId])
+  @@map("story_categories")
+}
+
+model Chapter {
+  id           String    @id @default(uuid())
+  storyId      String
+  chapterIndex Float
+  title        String    @db.NVarChar(255)
+  content      String    @db.NVarChar(Max)
+  viewCount    Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime? @updatedAt
+
+  story            Story            @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  readingHistories ReadingHistory[]
+  comments         Comment[]
+
+  @@map("chapters")
+}
+
+model ReadingHistory {
+  id              String    @id @default(uuid())
+  userId          String
+  storyId         String
+  chapterId       String
+  progressPercent Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime? @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  story   Story   @relation(fields: [storyId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  chapter Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, storyId])
+  @@map("reading_history")
+}
+
+model Bookmark {
+  userId    String
+  storyId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@id([userId, storyId])
+  @@map("bookmarks")
+}
+
+model Review {
+  id          String    @id @default(uuid())
+  userId      String
+  storyId     String
+  ratingScore Int
+  content     String?   @db.NVarChar(Max)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, storyId])
+  @@map("reviews")
+}
+
+model Comment {
+  id        String    @id @default(uuid())
+  userId    String
+  storyId   String
+  chapterId String?
+  parentId  String?
+  content   String    @db.NVarChar(Max)
+  isDeleted Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  story   Story    @relation(fields: [storyId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  chapter Chapter? @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  parent  Comment? @relation("CommentReplies", fields: [parentId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  replies Comment[] @relation("CommentReplies")
+
+  @@map("comments")
+}
+
+model Notification {
+  id                  String   @id @default(uuid())
+  receiverId          String
+  senderId            String?
+  targetType          String?  @db.NVarChar(50)
+  targetId            String?
+  actionType          String   @db.NVarChar(50)
+  notificationMessage String   @db.NVarChar(255)
+  isRead              Boolean  @default(false)
+  createdAt           DateTime @default(now())
+
+  receiver User  @relation("Receiver", fields: [receiverId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  sender   User? @relation("Sender", fields: [senderId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+
+  @@map("notifications")
+}
+
+model StoryViewLog {
+  id        String   @id @default(uuid())
+  storyId   String
+  viewDate  DateTime @db.Date
+  viewCount Int      @default(0)
+
+  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@unique([storyId, viewDate])
+  @@map("story_view_logs")
+}
