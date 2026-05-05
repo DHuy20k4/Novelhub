@@ -1,5 +1,6 @@
 import prisma from '../utils/prisma.util';
 import { ReviewInput, GetReviewsQuery } from '../validations/review.validation';
+import { NotificationService } from './notification.service';
 
 export class ReviewService {
   static async getReviewsByStoryId(storyId: string, query: GetReviewsQuery) {
@@ -83,6 +84,18 @@ export class ReviewService {
 
       return upsertedReview;
     });
+
+    // Gửi thông báo cho tác giả nếu người đánh giá không phải tác giả
+    if (story.uploaderId !== userId) {
+      await NotificationService.createAndSendNotification(
+        story.uploaderId,
+        userId,
+        'STORY',
+        storyId,
+        'REVIEW',
+        `đã đánh giá ${data.ratingScore} sao cho truyện "${story.title}".`
+      );
+    }
 
     return review;
   }

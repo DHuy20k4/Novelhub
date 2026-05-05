@@ -1,5 +1,6 @@
 import prisma from '../utils/prisma.util';
 import { SearchUsersInput, UpdateUserInput } from '../validations/user.validation';
+import { NotificationService } from './notification.service';
 
 export class UserService {
   static async searchUsers(data: SearchUsersInput) {
@@ -126,6 +127,16 @@ export class UserService {
         followingId,
       },
     });
+
+    // Gửi thông báo
+    await NotificationService.createAndSendNotification(
+      followingId,
+      followerId,
+      'USER',
+      followerId,
+      'FOLLOW',
+      'đã bắt đầu theo dõi bạn.'
+    );
 
     return { message: 'Đã theo dõi thành công' };
   }

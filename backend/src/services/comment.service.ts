@@ -1,5 +1,6 @@
 import prisma from '../utils/prisma.util';
 import { CreateCommentInput, UpdateCommentInput, GetCommentsQuery } from '../validations/comment.validation';
+import { NotificationService } from './notification.service';
 
 export class CommentService {
   static async getComments(storyId: string, chapterId: string | undefined, query: GetCommentsQuery) {
@@ -84,11 +85,13 @@ export class CommentService {
     }
 
     // Nếu có parentId, kiểm tra parent comment
+    let parentUserId: string | null = null;
     if (data.parentId) {
       const parent = await prisma.comment.findUnique({ where: { id: data.parentId } });
       if (!parent || parent.storyId !== data.storyId) {
         throw new Error('Bình luận gốc không hợp lệ');
       }
+      parentUserId = parent.userId;
       // Để tránh nested quá sâu (chỉ hỗ trợ 1 level reply), nếu parent comment cũng là reply thì gán parentId = parent.parentId
       if (parent.parentId) {
         data.parentId = parent.parentId;
@@ -104,6 +107,29 @@ export class CommentService {
         user: { select: { id: true, displayName: true, avatarUrl: true, username: true, role: true } },
       },
     });
+
+    // Gửi thông báo
+    if (data.parentId && parentUserId && parentUserId !== userId) {
+      // Báo cho chủ comment gốc
+      await NotificationService.createAndSendNotification(
+        parentUserId,
+        userId,
+        'COMMENT',
+        newComment.id,
+        'REPLY',
+        `đã trả lời bình luận của bạn.`
+      );
+    } else if (!data.parentId && story.uploaderId !== userId) {
+      // Báo cho tác giả truyện
+      await NotificationService.createAndSendNotification(
+        story.uploaderId,
+        userId,
+        'STORY',
+        story.id,
+        'COMMENT',
+        `đã bình luận về truyện "${story.title}".`
+      );
+    }
 
     return newComment;
   }
