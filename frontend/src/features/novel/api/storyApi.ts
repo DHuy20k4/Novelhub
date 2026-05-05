@@ -47,6 +47,7 @@ export const storyApi = {
     page?: number;
     search?: string;
     categories?: string;
+    uploaderId?: string;
   }): Promise<GetStoriesResponse> => {
     return axiosClient.get("/stories", { params });
   },

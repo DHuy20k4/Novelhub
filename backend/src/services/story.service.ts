@@ -26,6 +26,10 @@ export class StoryService {
       };
     }
 
+    if (query.uploaderId) {
+      whereClause.uploaderId = query.uploaderId;
+    }
+
     let orderByClause: any = {};
     switch (sortBy) {
       case 'updated':

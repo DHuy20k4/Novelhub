@@ -92,6 +92,9 @@ export function Header() {
                   <Link to="/profile">Hồ sơ cá nhân</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
+                  <Link to="/studio">Khu vực tác giả (Studio)</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link to="/library">Tủ sách của tôi</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />

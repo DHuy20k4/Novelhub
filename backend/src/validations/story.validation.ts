@@ -5,6 +5,7 @@ export const getStoriesQuerySchema = z.object({
   page: z.string().regex(/^\d+$/).transform(Number).default(1),
   limit: z.string().regex(/^\d+$/).transform(Number).default(12),
   categories: z.string().optional(), // VD: "action,romance"
+  uploaderId: z.string().uuid().optional(),
   sortBy: z.enum(['newest', 'updated', 'topView', 'topRate']).default('newest'),
 });
 
