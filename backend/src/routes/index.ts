@@ -16,6 +16,7 @@ import reviewRoutes from './review.route';
 import commentRoutes from './comment.route';
 import notificationRoutes from './notification.route';
 import uploadRoutes from './upload.route';
+import adminRoutes from './admin.route';
 
 // Import and use other route files here
 router.use('/auth', authRoutes);
@@ -28,5 +29,6 @@ router.use('/reviews', reviewRoutes);
 router.use('/comments', commentRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/upload', uploadRoutes);
+router.use('/admin', adminRoutes);
 
 export default router;

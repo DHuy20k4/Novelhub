@@ -23,8 +23,8 @@ export class StoryController {
 
   static async getStoryById(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = req.params.id as string;
-      const story = await StoryService.getStoryById(id);
+      const identifier = req.params.id as string;
+      const story = await StoryService.getStoryById(identifier);
       
       res.status(200).json({
         success: true,

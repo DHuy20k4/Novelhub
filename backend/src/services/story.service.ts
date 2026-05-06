@@ -84,9 +84,14 @@ export class StoryService {
     };
   }
 
-  static async getStoryById(id: string) {
+  static async getStoryById(identifier: string) {
+    // Check if identifier is a valid UUID
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
+    
+    const whereClause = isUUID ? { id: identifier } : { slug: identifier };
+
     const story = await prisma.story.findUnique({
-      where: { id },
+      where: whereClause,
       include: {
         uploader: {
           select: { id: true, displayName: true, avatarUrl: true, username: true },
