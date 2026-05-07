@@ -8,201 +8,188 @@ datasource db {
 }
 
 model User {
-  id           String    @id @default(uuid())
-  username     String    @unique @db.NVarChar(50)
-  email        String    @unique @db.NVarChar(100)
-  passwordHash String    @db.NVarChar(255)
-  displayName  String    @db.NVarChar(100)
-  avatarUrl    String?   @db.NVarChar(255)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime? @updatedAt
-  role         String    @default("user") @db.NVarChar(20)
-  isActive     Boolean   @default(true)
-  isBanned     Boolean   @default(false)
-  banReason    String?   @db.NVarChar(255)
+  id                    String           @id(map: "PK__Users__3213E83FFA29ECB1") @default(dbgenerated("newsequentialid()"), map: "DF__Users__id__398D8EEE") @db.UniqueIdentifier
+  username              String           @unique(map: "UQ__Users__F3DBC57219F8F646") @db.NVarChar(50)
+  email                 String           @unique(map: "UQ__Users__AB6E6164C9EB31DB") @db.NVarChar(100)
+  passwordHash          String           @db.NVarChar(255)
+  displayName           String           @db.NVarChar(100)
+  avatarUrl             String?          @db.NVarChar(255)
+  createdAt             DateTime         @default(now(), map: "DF__Users__createdAt__3A81B327") @db.DateTime
+  updatedAt             DateTime?        @updatedAt @db.DateTime
+  role                  String           @default("user", map: "DF__Users__role__3B75D760") @db.NVarChar(20)
+  isActive              Boolean          @default(true, map: "DF__Users__isActive__3D5E1FD2")
+  isBanned              Boolean          @default(false, map: "DF__Users__isBanned__3E52440B")
+  banReason             String?          @db.NVarChar(255)
+  bookmarks             Bookmark[]
+  comments              Comment[]
+  following             Follow[]         @relation("Follower")
+  followers             Follow[]         @relation("Following")
+  notificationsReceived Notification[]   @relation("Receiver")
+  notificationsSent     Notification[]   @relation("Sender")
+  readingHistories      ReadingHistory[]
+  reviews               Review[]
+  stories               Story[]
 
-  // Relations
-  stories          Story[]
-  following        Follow[]         @relation("Follower")
-  followers        Follow[]         @relation("Following")
-  readingHistories ReadingHistory[]
-  bookmarks        Bookmark[]
-  reviews          Review[]
-  comments         Comment[]
-  notificationsSent Notification[] @relation("Sender")
-  notificationsReceived Notification[] @relation("Receiver")
-
-  @@map("users")
+  @@map("Users")
 }
 
 model Follow {
-  followerId  String
-  followingId String
-  createdAt   DateTime @default(now())
+  followerId  String   @db.UniqueIdentifier
+  followingId String   @db.UniqueIdentifier
+  createdAt   DateTime @default(now(), map: "DF__Follows__created__412EB0B6") @db.DateTime
+  follower    User     @relation("Follower", fields: [followerId], references: [id], onUpdate: NoAction, map: "FK_Follows_Follower")
+  following   User     @relation("Following", fields: [followingId], references: [id], onUpdate: NoAction, map: "FK_Follows_Following")
 
-  follower  User @relation("Follower", fields: [followerId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-  following User @relation("Following", fields: [followingId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-
-  @@id([followerId, followingId])
-  @@map("follows")
+  @@id([followerId, followingId], map: "PK__Follows__6FA3F10AEFFB323C")
+  @@map("Follows")
 }
 
 model Category {
-  id   String @id @default(uuid())
-  slug String @unique @db.NVarChar(100)
-  name String @db.NVarChar(100)
-
+  id      String          @id(map: "PK__Categori__3213E83FDB35171F") @default(dbgenerated("newsequentialid()"), map: "DF__Categories__id__47DBAE45") @db.UniqueIdentifier
+  slug    String          @unique(map: "UQ__Categori__32DD1E4C653435F3") @db.NVarChar(100)
+  name    String          @db.NVarChar(100)
   stories StoryCategory[]
 
-  @@map("categories")
+  @@map("Categories")
 }
 
 model Story {
-  id               String    @id @default(uuid())
-  uploaderId       String
-  title            String    @db.NVarChar(255)
-  slug             String    @unique @db.NVarChar(255)
-  coverUrl         String?   @db.NVarChar(255)
-  summary          String?   @db.NVarChar(Max)
-  viewCount        Int       @default(0)
-  reviewCount      Int       @default(0)
-  chapterCount     Int       @default(0)
-  averageRating    Float     @default(0)
-  moderationStatus String    @default("draft") @db.NVarChar(20)
-  writingStatus    String    @default("ongoing") @db.NVarChar(20)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime? @updatedAt
-
-  uploader         User             @relation(fields: [uploaderId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-  categories       StoryCategory[]
-  chapters         Chapter[]
-  readingHistories ReadingHistory[]
+  id               String           @id(map: "PK__Stories__3213E83F5191508C") @default(dbgenerated("newsequentialid()"), map: "DF__Stories__id__4BAC3F29") @db.UniqueIdentifier
+  uploaderId       String           @db.UniqueIdentifier
+  title            String           @db.NVarChar(255)
+  slug             String           @unique(map: "UQ__Stories__32DD1E4CD88946B2") @db.NVarChar(255)
+  coverUrl         String?          @db.NVarChar(255)
+  summary          String?          @db.NVarChar(Max)
+  viewCount        Int              @default(0, map: "DF__Stories__viewCou__4CA06362")
+  reviewCount      Int              @default(0, map: "DF__Stories__reviewC__4D94879B")
+  chapterCount     Int              @default(0, map: "DF__Stories__chapter__4E88ABD4")
+  averageRating    Float            @default(0, map: "DF__Stories__average__4F7CD00D")
+  moderationStatus String           @default("draft", map: "DF__Stories__moderat__5070F446") @db.NVarChar(20)
+  writingStatus    String           @default("ongoing", map: "DF__Stories__writing__52593CB8") @db.NVarChar(20)
+  createdAt        DateTime         @default(now(), map: "DF__Stories__created__5441852A") @db.DateTime
+  updatedAt        DateTime?        @updatedAt @db.DateTime
   bookmarks        Bookmark[]
-  reviews          Review[]
+  chapters         Chapter[]
   comments         Comment[]
+  readingHistories ReadingHistory[]
+  reviews          Review[]
+  uploader         User             @relation(fields: [uploaderId], references: [id], onUpdate: NoAction, map: "FK_Stories_Users")
+  categories       StoryCategory[]
   viewLogs         StoryViewLog[]
 
-  @@map("stories")
+  @@map("Stories")
 }
 
 model StoryCategory {
-  storyId    String
-  categoryId String
+  storyId    String   @db.UniqueIdentifier
+  categoryId String   @db.UniqueIdentifier
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_StoryCategories_Categories")
+  story      Story    @relation(fields: [storyId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_StoryCategories_Stories")
 
-  story    Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-
-  @@id([storyId, categoryId])
-  @@map("story_categories")
+  @@id([storyId, categoryId], map: "PK__StoryCat__8551E582AEF1B268")
+  @@map("StoryCategories")
 }
 
 model Chapter {
-  id           String    @id @default(uuid())
-  storyId      String
-  chapterIndex Float
-  title        String    @db.NVarChar(255)
-  content      String    @db.NVarChar(Max)
-  viewCount    Int       @default(0)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime? @updatedAt
-
-  story            Story            @relation(fields: [storyId], references: [id], onDelete: Cascade)
-  readingHistories ReadingHistory[]
+  id               String           @id(map: "PK__Chapters__3213E83FAD87D65E") @default(dbgenerated("newsequentialid()"), map: "DF__Chapters__id__5BE2A6F2") @db.UniqueIdentifier
+  storyId          String           @db.UniqueIdentifier
+  chapterIndex     Float
+  title            String           @db.NVarChar(255)
+  content          String           @db.NVarChar(Max)
+  viewCount        Int              @default(0, map: "DF__Chapters__viewCo__5CD6CB2B")
+  createdAt        DateTime         @default(now(), map: "DF__Chapters__create__5DCAEF64") @db.DateTime
+  updatedAt        DateTime?        @updatedAt @db.DateTime
+  story            Story            @relation(fields: [storyId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Chapters_Stories")
   comments         Comment[]
+  readingHistories ReadingHistory[]
 
-  @@map("chapters")
+  @@map("Chapters")
 }
 
 model ReadingHistory {
-  id              String    @id @default(uuid())
-  userId          String
-  storyId         String
-  chapterId       String
-  progressPercent Int       @default(0)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime? @updatedAt
+  id              String    @id(map: "PK__ReadingH__3213E83F6B7C6BA4") @default(dbgenerated("newsequentialid()"), map: "DF__ReadingHisto__id__628FA481") @db.UniqueIdentifier
+  userId          String    @db.UniqueIdentifier
+  storyId         String    @db.UniqueIdentifier
+  chapterId       String    @db.UniqueIdentifier
+  progressPercent Int       @default(0, map: "DF__ReadingHi__progr__6383C8BA")
+  createdAt       DateTime  @default(now(), map: "DF__ReadingHi__creat__656C112C") @db.DateTime
+  updatedAt       DateTime? @updatedAt @db.DateTime
+  chapter         Chapter   @relation(fields: [chapterId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ReadingHistory_Chapters")
+  story           Story     @relation(fields: [storyId], references: [id], onUpdate: NoAction, map: "FK_ReadingHistory_Stories")
+  user            User      @relation(fields: [userId], references: [id], onUpdate: NoAction, map: "FK_ReadingHistory_Users")
 
-  user    User    @relation(fields: [userId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-  story   Story   @relation(fields: [storyId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-  chapter Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, storyId])
-  @@map("reading_history")
+  @@unique([userId, storyId], map: "UQ_ReadingHistory_User_Story")
+  @@map("ReadingHistory")
 }
 
 model Bookmark {
-  userId    String
-  storyId   String
-  createdAt DateTime @default(now())
+  userId    String   @db.UniqueIdentifier
+  storyId   String   @db.UniqueIdentifier
+  createdAt DateTime @default(now(), map: "DF__Bookmarks__creat__6B24EA82") @db.DateTime
+  story     Story    @relation(fields: [storyId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Bookmarks_Stories")
+  user      User     @relation(fields: [userId], references: [id], onUpdate: NoAction, map: "FK_Bookmarks_Users")
 
-  user  User  @relation(fields: [userId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
-
-  @@id([userId, storyId])
-  @@map("bookmarks")
+  @@id([userId, storyId], map: "PK__Bookmark__2AECC8563FF0F0B3")
+  @@map("Bookmarks")
 }
 
 model Review {
-  id          String    @id @default(uuid())
-  userId      String
-  storyId     String
+  id          String    @id(map: "PK__Reviews__3213E83FEFBAD279") @default(dbgenerated("newsequentialid()"), map: "DF__Reviews__id__70DDC3D8") @db.UniqueIdentifier
+  userId      String    @db.UniqueIdentifier
+  storyId     String    @db.UniqueIdentifier
   ratingScore Int
   content     String?   @db.NVarChar(Max)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime? @updatedAt
+  createdAt   DateTime  @default(now(), map: "DF__Reviews__created__72C60C4A") @db.DateTime
+  updatedAt   DateTime? @updatedAt @db.DateTime
+  story       Story     @relation(fields: [storyId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Reviews_Stories")
+  user        User      @relation(fields: [userId], references: [id], onUpdate: NoAction, map: "FK_Reviews_Users")
 
-  user  User  @relation(fields: [userId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, storyId])
-  @@map("reviews")
+  @@unique([userId, storyId], map: "UQ_Reviews_User_Story")
+  @@map("Reviews")
 }
 
 model Comment {
-  id        String    @id @default(uuid())
-  userId    String
-  storyId   String
-  chapterId String?
-  parentId  String?
+  id        String    @id(map: "PK__Comments__3213E83FAA5DCA92") @default(dbgenerated("newsequentialid()"), map: "DF__Comments__id__778AC167") @db.UniqueIdentifier
+  userId    String    @db.UniqueIdentifier
+  storyId   String    @db.UniqueIdentifier
+  chapterId String?   @db.UniqueIdentifier
+  parentId  String?   @db.UniqueIdentifier
   content   String    @db.NVarChar(Max)
-  isDeleted Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
+  isDeleted Boolean   @default(false, map: "DF__Comments__isDele__787EE5A0")
+  createdAt DateTime  @default(now(), map: "DF__Comments__create__797309D9") @db.DateTime
+  updatedAt DateTime? @updatedAt @db.DateTime
+  chapter   Chapter?  @relation(fields: [chapterId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Comments_Chapters")
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Comments_Parent")
+  replies   Comment[] @relation("CommentReplies")
+  story     Story     @relation(fields: [storyId], references: [id], onUpdate: NoAction, map: "FK_Comments_Stories")
+  user      User      @relation(fields: [userId], references: [id], onUpdate: NoAction, map: "FK_Comments_Users")
 
-  user    User     @relation(fields: [userId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-  story   Story    @relation(fields: [storyId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-  chapter Chapter? @relation(fields: [chapterId], references: [id], onDelete: Cascade)
-  parent  Comment? @relation("CommentReplies", fields: [parentId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-  replies Comment[] @relation("CommentReplies")
-
-  @@map("comments")
+  @@map("Comments")
 }
 
 model Notification {
-  id                  String   @id @default(uuid())
-  receiverId          String
-  senderId            String?
+  id                  String   @id(map: "PK__Notifica__3213E83F09740B40") @default(dbgenerated("newsequentialid()"), map: "DF__Notification__id__01142BA1") @db.UniqueIdentifier
+  receiverId          String   @db.UniqueIdentifier
+  senderId            String?  @db.UniqueIdentifier
   targetType          String?  @db.NVarChar(50)
-  targetId            String?
+  targetId            String?  @db.UniqueIdentifier
   actionType          String   @db.NVarChar(50)
   notificationMessage String   @db.NVarChar(255)
-  isRead              Boolean  @default(false)
-  createdAt           DateTime @default(now())
+  isRead              Boolean  @default(false, map: "DF__Notificat__isRea__02084FDA")
+  createdAt           DateTime @default(now(), map: "DF__Notificat__creat__02FC7413") @db.DateTime
+  receiver            User     @relation("Receiver", fields: [receiverId], references: [id], onUpdate: NoAction, map: "FK_Notifications_Receiver")
+  sender              User?    @relation("Sender", fields: [senderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Notifications_Sender")
 
-  receiver User  @relation("Receiver", fields: [receiverId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-  sender   User? @relation("Sender", fields: [senderId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-
-  @@map("notifications")
+  @@map("Notifications")
 }
 
 model StoryViewLog {
-  id        String   @id @default(uuid())
-  storyId   String
+  id        String   @id(map: "PK__StoryVie__3213E83F62F8AFED") @default(dbgenerated("newsequentialid()"), map: "DF__StoryViewLog__id__08B54D69") @db.UniqueIdentifier
+  storyId   String   @db.UniqueIdentifier
   viewDate  DateTime @db.Date
-  viewCount Int      @default(0)
+  viewCount Int      @default(0, map: "DF__StoryView__viewC__09A971A2")
+  story     Story    @relation(fields: [storyId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_StoryViewLogs_Stories")
 
-  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
-
-  @@unique([storyId, viewDate])
-  @@map("story_view_logs")
+  @@unique([storyId, viewDate], map: "UQ_StoryViewLogs_Story_Date")
+  @@map("StoryViewLogs")
 }
