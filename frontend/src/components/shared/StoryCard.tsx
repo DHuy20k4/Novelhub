@@ -28,7 +28,7 @@ export function StoryCard({ story, variant = "default" }: StoryCardProps) {
             {!isCompact && story.categories?.[0] && (
               <div className="absolute top-2 left-2">
                 <Badge className="bg-primary/90 hover:bg-primary shadow-sm">
-                  {story.categories[0].category.name}
+                  {story.categories[0].name}
                 </Badge>
               </div>
             )}
@@ -48,10 +48,10 @@ export function StoryCard({ story, variant = "default" }: StoryCardProps) {
 
             <div className="mt-auto flex flex-col gap-2">
               <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span className="truncate max-w-[120px]">{story.author?.displayName || "Ẩn danh"}</span>
+                <span className="truncate max-w-[120px]">{story.uploader?.displayName || "Ẩn danh"}</span>
                 {isCompact && story.categories?.[0] && (
                   <span className="text-primary truncate max-w-[80px]">
-                    {story.categories[0].category.name}
+                    {story.categories[0].name}
                   </span>
                 )}
               </div>
