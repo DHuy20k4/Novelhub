@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Plus, Edit, Trash2, Loader2 } from "lucide-react"
 import { toast } from "sonner"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 
@@ -80,12 +80,12 @@ export function AdminCategories() {
   })
 
   // Watch name to auto-generate slug for new categories
-  const nameValue = form.watch("name")
+  const nameValue = useWatch({ control: form.control, name: "name" })
   useEffect(() => {
     if (!editingCategory && nameValue && !form.formState.dirtyFields.slug) {
       form.setValue("slug", generateSlug(nameValue), { shouldValidate: true })
     }
-  }, [nameValue, editingCategory])
+  }, [nameValue, editingCategory, form])
 
   // Fetch categories
   const { data: categoriesData, isLoading } = useQuery({
@@ -103,7 +103,8 @@ export function AdminCategories() {
       queryClient.invalidateQueries({ queryKey: ["categories"] })
       closeDialog()
     },
-    onError: (error: any) => {
+    onError: (err) => {
+      const error = err as { response?: { data?: { message?: string } } };
       toast.error(error?.response?.data?.message || "Thêm thất bại")
     }
   })
@@ -118,7 +119,8 @@ export function AdminCategories() {
       queryClient.invalidateQueries({ queryKey: ["categories"] })
       closeDialog()
     },
-    onError: (error: any) => {
+    onError: (err) => {
+      const error = err as { response?: { data?: { message?: string } } };
       toast.error(error?.response?.data?.message || "Cập nhật thất bại")
     }
   })
@@ -131,7 +133,8 @@ export function AdminCategories() {
       queryClient.invalidateQueries({ queryKey: ["admin-categories"] })
       queryClient.invalidateQueries({ queryKey: ["categories"] })
     },
-    onError: (error: any) => {
+    onError: (err) => {
+      const error = err as { response?: { data?: { message?: string } } };
       toast.error(error?.response?.data?.message || "Xóa thất bại")
     },
     onSettled: () => setDeletingId(null)

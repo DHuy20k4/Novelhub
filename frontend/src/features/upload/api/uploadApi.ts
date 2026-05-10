@@ -5,11 +5,11 @@ export const uploadApi = {
     const formData = new FormData();
     formData.append("image", file); // Đã sửa từ 'file' thành 'image' để match với upload.single('image') ở Backend
 
-    const res: any = await axiosClient.post("/upload", formData, {
+    const res = await axiosClient.post("/upload", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
-    });
+    }) as { success: boolean; data?: { imageUrl: string }; message?: string };
 
     return {
       success: res.success,

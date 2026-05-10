@@ -8,6 +8,20 @@ import { StoryCard } from "@/components/shared/StoryCard"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 
+const GridSkeleton = ({ count = 8 }) => (
+  <>
+    {Array(count)
+      .fill(0)
+      .map((_, i) => (
+        <div key={i} className="space-y-3">
+          <Skeleton className="h-[250px] w-full rounded-xl" />
+          <Skeleton className="h-4 w-3/4" />
+          <Skeleton className="h-4 w-1/2" />
+        </div>
+      ))}
+  </>
+)
+
 export function Categories() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
 
@@ -42,19 +56,6 @@ export function Categories() {
     })
   }
 
-  const GridSkeleton = ({ count = 8 }) => (
-    <>
-      {Array(count)
-        .fill(0)
-        .map((_, i) => (
-          <div key={i} className="space-y-3">
-            <Skeleton className="h-[250px] w-full rounded-xl" />
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-4 w-1/2" />
-          </div>
-        ))}
-    </>
-  )
 
   return (
     <div className="container max-w-6xl py-10 flex flex-col gap-8">

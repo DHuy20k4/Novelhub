@@ -22,7 +22,7 @@ export const userApi = {
   updateMyProfile: (data: {
     displayName?: string;
     avatarUrl?: string;
-  }): Promise<{ success: boolean; data: any; message: string }> => {
+  }): Promise<{ success: boolean; data: UserProfile; message: string }> => {
     return axiosClient.patch("/users/me", data);
   },
 };

@@ -57,7 +57,8 @@ export function LoginForm() {
       } else {
         toast.error(res.message || "Đăng nhập thất bại!")
       }
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as { response?: { data?: { message?: string } } };
       toast.error(error?.response?.data?.message || "Đã có lỗi xảy ra. Vui lòng thử lại sau.")
     } finally {
       setIsLoading(false)

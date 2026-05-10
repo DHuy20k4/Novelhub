@@ -83,7 +83,8 @@ export function ProfilePage() {
         })
       }
     },
-    onError: (error: any) => {
+    onError: (err) => {
+      const error = err as { response?: { data?: { message?: string } } };
       toast.error(error?.response?.data?.message || "Cập nhật thất bại")
     }
   })
@@ -109,7 +110,7 @@ export function ProfilePage() {
         // Sau khi upload thành công, gửi update profile
         updateMutation.mutate({ avatarUrl: uploadRes.url })
       }
-    } catch (error) {
+    } catch {
       toast.error("Upload ảnh thất bại")
     } finally {
       setIsUploading(false)

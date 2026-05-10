@@ -39,7 +39,8 @@ export function ImageUpload({ value, onChange, className = "" }: ImageUploadProp
       } else {
         toast.error(res.message || "Tải ảnh thất bại!");
       }
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as { response?: { data?: { message?: string } } };
       toast.error(error?.response?.data?.message || "Có lỗi xảy ra khi tải ảnh lên");
     } finally {
       setIsUploading(false);

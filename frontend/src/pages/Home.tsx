@@ -13,6 +13,30 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 
+const GridSkeleton = ({ count = 6 }) => (
+  <>
+    {Array(count)
+      .fill(0)
+      .map((_, i) => (
+        <div key={i} className="space-y-3">
+          <Skeleton className="h-[250px] w-full rounded-xl" />
+          <Skeleton className="h-4 w-3/4" />
+          <Skeleton className="h-4 w-1/2" />
+        </div>
+      ))}
+  </>
+)
+
+const CompactSkeleton = ({ count = 5 }) => (
+  <div className="space-y-4">
+    {Array(count)
+      .fill(0)
+      .map((_, i) => (
+        <Skeleton key={i} className="h-28 w-full rounded-xl" />
+      ))}
+  </div>
+)
+
 export function Home() {
   // Fetch Top View stories for Hero Carousel
   const { data: topViewData, isLoading: isLoadingTop } = useQuery({
@@ -35,31 +59,6 @@ export function Home() {
   const topStories = topViewData?.data || []
   const updatedStories = updatedData?.data || []
   const topRateStories = topRateData?.data || []
-
-  // Component for Loading State
-  const GridSkeleton = ({ count = 6 }) => (
-    <>
-      {Array(count)
-        .fill(0)
-        .map((_, i) => (
-          <div key={i} className="space-y-3">
-            <Skeleton className="h-[250px] w-full rounded-xl" />
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-4 w-1/2" />
-          </div>
-        ))}
-    </>
-  )
-
-  const CompactSkeleton = ({ count = 5 }) => (
-    <div className="space-y-4">
-      {Array(count)
-        .fill(0)
-        .map((_, i) => (
-          <Skeleton key={i} className="h-28 w-full rounded-xl" />
-        ))}
-    </div>
-  )
 
   return (
     <div className="flex flex-col gap-10 pb-10">

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { toast } from "sonner"
@@ -65,7 +65,7 @@ export function CreateStoryPage() {
   })
 
   // Theo dõi Title để tự động sinh Slug
-  const titleValue = form.watch("title")
+  const titleValue = useWatch({ control: form.control, name: "title" })
   useEffect(() => {
     if (titleValue && !form.formState.dirtyFields.slug) {
       form.setValue("slug", generateSlug(titleValue), { shouldValidate: true })
@@ -80,7 +80,7 @@ export function CreateStoryPage() {
         if (res.success) {
           setCategories(res.data)
         }
-      } catch (error) {
+      } catch {
         toast.error("Không thể tải danh sách thể loại")
       }
     }
@@ -105,7 +105,8 @@ export function CreateStoryPage() {
       } else {
         toast.error(res.message || "Đã có lỗi xảy ra.")
       }
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as { response?: { data?: { message?: string } } };
       toast.error(error?.response?.data?.message || "Tạo truyện thất bại.")
     } finally {
       setIsLoading(false)

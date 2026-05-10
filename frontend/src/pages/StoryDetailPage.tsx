@@ -66,8 +66,9 @@ export function StoryDetailPage() {
       toast.success(res?.message || "Đã cập nhật theo dõi")
       queryClient.invalidateQueries({ queryKey: ["my-bookmarks"] })
     },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.message || "Có lỗi xảy ra")
+    onError: (err) => {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error?.response?.data?.message || "Có lỗi xảy ra")
     }
   })
 

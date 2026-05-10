@@ -37,7 +37,7 @@ export function ChapterFormPage() {
   const isEditing = !!chapterId
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const form = useForm<ChapterFormValues>({
+  const form = useForm<z.input<typeof chapterSchema>, undefined, ChapterFormValues>({
     resolver: zodResolver(chapterSchema),
     defaultValues: {
       chapterIndex: 1,
@@ -87,7 +87,8 @@ export function ChapterFormPage() {
         toast.success("Thêm chương mới thành công!")
       }
       navigate(`/studio/story/${storyId}/chapters`)
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as { response?: { data?: { message?: string } } };
       toast.error(error?.response?.data?.message || "Có lỗi xảy ra khi lưu chương.")
     } finally {
       setIsSubmitting(false)
@@ -131,7 +132,7 @@ export function ChapterFormPage() {
                       <FormItem>
                         <FormLabel>Số chương <span className="text-destructive">*</span></FormLabel>
                         <FormControl>
-                          <Input type="number" min={1} {...field} />
+                          <Input type="number" min={1} {...field} value={field.value as number | string} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

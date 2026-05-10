@@ -18,11 +18,11 @@ export interface AuthResponse {
 }
 
 export const authApi = {
-  login: (data: any): Promise<AuthResponse> => {
+  login: (data: Record<string, unknown>): Promise<AuthResponse> => {
     return axiosClient.post('/auth/login', data);
   },
 
-  register: (data: any): Promise<AuthResponse> => {
+  register: (data: Record<string, unknown>): Promise<AuthResponse> => {
     return axiosClient.post('/auth/register', data);
   },
 };

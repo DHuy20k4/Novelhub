@@ -80,7 +80,8 @@ export function RegisterForm() {
       } else {
         toast.error(res.message || "Đăng ký thất bại!")
       }
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as { response?: { data?: { message?: string } } };
       toast.error(error?.response?.data?.message || "Đã có lỗi xảy ra. Vui lòng kiểm tra lại.")
     } finally {
       setIsLoading(false)
