@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Plus, Edit, Trash2, Loader2 } from "lucide-react"
 import { toast } from "sonner"
@@ -81,9 +81,11 @@ export function AdminCategories() {
 
   // Watch name to auto-generate slug for new categories
   const nameValue = form.watch("name")
-  if (!editingCategory && nameValue && !form.formState.dirtyFields.slug) {
-    form.setValue("slug", generateSlug(nameValue), { shouldValidate: true })
-  }
+  useEffect(() => {
+    if (!editingCategory && nameValue && !form.formState.dirtyFields.slug) {
+      form.setValue("slug", generateSlug(nameValue), { shouldValidate: true })
+    }
+  }, [nameValue, editingCategory])
 
   // Fetch categories
   const { data: categoriesData, isLoading } = useQuery({
