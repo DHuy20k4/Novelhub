@@ -1,12 +1,18 @@
 import axiosClient from "@/services/axiosClient";
 
+export interface StoryCategory {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 export interface Story {
   id: string;
+  uploaderId: string;
   title: string;
   slug: string;
   summary: string | null;
   coverUrl: string | null;
-  authorId: string;
   moderationStatus: string;
   writingStatus: string;
   viewCount: number;
@@ -15,17 +21,14 @@ export interface Story {
   chapterCount: number;
   createdAt: string;
   updatedAt: string;
-  author: {
+  uploader: {
+    id: string;
     displayName: string;
-    username: string;
+    avatarUrl: string | null;
+    username?: string;
   };
-  categories: {
-    category: {
-      id: string;
-      name: string;
-      slug: string;
-    };
-  }[];
+  // Backend trả về categories đã flatten thành mảng Category trực tiếp
+  categories: StoryCategory[];
 }
 
 export interface GetStoriesResponse {
@@ -54,6 +57,10 @@ export const storyApi = {
 
   getStoryById: (id: string): Promise<{ success: boolean; data: Story }> => {
     return axiosClient.get(`/stories/${id}`);
+  },
+
+  getStoryBySlug: (slug: string): Promise<{ success: boolean; data: Story }> => {
+    return axiosClient.get(`/stories/${slug}`);
   },
 
   createStory: (data: {

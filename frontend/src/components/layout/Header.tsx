@@ -97,6 +97,9 @@ export function Header() {
                 <DropdownMenuItem asChild>
                   <Link to="/library">Tủ sách của tôi</Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/history">Lịch sử đọc</Link>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-destructive cursor-pointer" onClick={logout}>
                   Đăng xuất
