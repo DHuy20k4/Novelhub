@@ -24,16 +24,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { chapterApi } from "@/features/novel/api/chapterApi"
 
 const chapterSchema = z.object({
-  chapterIndex: z.any().transform(Number).pipe(z.number().min(1, "Số thứ tự chương phải lớn hơn 0")),
+  chapterIndex: z.coerce.number().min(1, "Số thứ tự chương phải lớn hơn 0"),
   title: z.string().min(1, "Tên chương không được để trống").max(255, "Tên chương quá dài"),
   content: z.string().min(10, "Nội dung chương quá ngắn (ít nhất 10 ký tự)"),
 })
 
-type ChapterFormValues = {
-  chapterIndex: number;
-  title: string;
-  content: string;
-}
+type ChapterFormValues = z.infer<typeof chapterSchema>
 
 export function ChapterFormPage() {
   const { storyId, chapterId } = useParams<{ storyId: string; chapterId?: string }>()
@@ -80,7 +76,7 @@ export function ChapterFormPage() {
 
   async function onSubmit(data: ChapterFormValues) {
     if (!storyId) return
-    
+
     setIsSubmitting(true)
     try {
       if (isEditing) {
@@ -108,7 +104,7 @@ export function ChapterFormPage() {
 
   return (
     <div className="container max-w-4xl py-10 space-y-6">
-      
+
       <Button variant="ghost" className="w-fit -ml-4" asChild>
         <Link to={`/studio/story/${storyId}/chapters`}>
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -125,7 +121,7 @@ export function ChapterFormPage() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              
+
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div className="md:col-span-1">
                   <FormField
@@ -168,10 +164,10 @@ export function ChapterFormPage() {
                   <FormItem>
                     <FormLabel>Nội dung <span className="text-destructive">*</span></FormLabel>
                     <FormControl>
-                      <Textarea 
-                        placeholder="Nhập nội dung chương truyện vào đây..." 
+                      <Textarea
+                        placeholder="Nhập nội dung chương truyện vào đây..."
                         className="min-h-[400px] resize-y leading-relaxed font-serif text-base"
-                        {...field} 
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
