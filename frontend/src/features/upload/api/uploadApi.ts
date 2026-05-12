@@ -13,7 +13,7 @@ export const uploadApi = {
 
     return {
       success: res.success,
-      url: res.data?.imageUrl, // Map chính xác data.imageUrl từ Backend
+      url: res.data?.imageUrl || "", // Map chính xác data.imageUrl từ Backend
       message: res.message
     };
   },

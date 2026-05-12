@@ -57,8 +57,14 @@ export function StudioPage() {
                   <div>
                     <div className="flex items-start justify-between gap-4 mb-2">
                       <h3 className="text-xl font-bold line-clamp-2">{story.title}</h3>
-                      <Badge variant={story.moderationStatus === "published" ? "default" : "secondary"}>
-                        {story.moderationStatus === "published" ? "Đã xuất bản" : "Bản nháp"}
+                      <Badge variant={
+                        story.moderationStatus === "approved" ? "default" :
+                        story.moderationStatus === "pending" ? "secondary" :
+                        "destructive"
+                      }>
+                        {story.moderationStatus === "approved" ? "Đã duyệt" : 
+                         story.moderationStatus === "pending" ? "Chờ duyệt" : 
+                         story.moderationStatus === "rejected" ? "Bị từ chối" : "Bản nháp"}
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground mb-4 line-clamp-2">

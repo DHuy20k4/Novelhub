@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from "react-router-dom"
-import { LayoutDashboard, Tags, Users, Settings, LogOut, ArrowLeft } from "lucide-react"
+import { LayoutDashboard, Tags, Users, Settings, LogOut, ArrowLeft, BookOpen } from "lucide-react"
 
 import { useAuthStore } from "@/store/authStore"
 import { Button } from "@/components/ui/button"
@@ -13,6 +13,7 @@ export function AdminLayout() {
     { name: "Tổng quan", path: "/admin", icon: LayoutDashboard },
     { name: "Thể loại", path: "/admin/categories", icon: Tags },
     { name: "Người dùng", path: "/admin/users", icon: Users },
+    { name: "Phê duyệt truyện", path: "/admin/stories", icon: BookOpen },
     { name: "Cài đặt", path: "/admin/settings", icon: Settings },
   ]
 

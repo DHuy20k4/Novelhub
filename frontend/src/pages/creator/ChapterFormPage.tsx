@@ -132,7 +132,13 @@ export function ChapterFormPage() {
                       <FormItem>
                         <FormLabel>Số chương <span className="text-destructive">*</span></FormLabel>
                         <FormControl>
-                          <Input type="number" min={1} {...field} value={field.value as number | string} />
+                          <Input 
+                            type="number" 
+                            min={1} 
+                            {...field} 
+                            value={field.value as number | string} 
+                            onFocus={(e) => e.target.select()}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

@@ -114,7 +114,7 @@ export function ManageChaptersPage() {
                     Chương {chapter.chapterIndex}: {chapter.title}
                   </h4>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Cập nhật: {new Date(chapter.updatedAt).toLocaleDateString("vi-VN")} • {chapter.viewCount} lượt xem
+                    Cập nhật: {new Date(chapter.updatedAt || chapter.createdAt).toLocaleDateString("vi-VN")} • {chapter.viewCount} lượt xem
                   </p>
                 </div>
               </div>
