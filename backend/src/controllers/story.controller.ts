@@ -2,10 +2,43 @@ import { Request, Response, NextFunction } from 'express';
 import { StoryService } from '../services/story.service';
 import { getStoriesQuerySchema, createStorySchema, updateStorySchema } from '../validations/story.validation';
 
+import jwt from 'jsonwebtoken';
+
 export class StoryController {
   static async getStories(req: Request, res: Response, next: NextFunction) {
     try {
       const validatedQuery = getStoriesQuerySchema.parse(req.query);
+
+      // Attempt to extract user from token optionally
+      let userId: string | null = null;
+      let userRole: string = 'guest';
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.substring(7);
+        try {
+          const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as any;
+          userId = decoded.id;
+          userRole = decoded.role;
+        } catch (e) {}
+      }
+
+      // Default status filter logic
+      if (!validatedQuery.status) {
+        if (validatedQuery.uploaderId && validatedQuery.uploaderId === userId) {
+          // Allow author to see all their own stories (no status filter)
+        } else {
+          validatedQuery.status = 'approved';
+        }
+      } else {
+        if (validatedQuery.status !== 'approved') {
+          if (userRole !== 'admin') {
+            if (!userId || validatedQuery.uploaderId !== userId) {
+              return res.status(403).json({ success: false, message: 'Bạn không có quyền xem truyện chưa xuất bản' });
+            }
+          }
+        }
+      }
+
       const result = await StoryService.getStories(validatedQuery);
       
       res.status(200).json({
@@ -25,6 +58,24 @@ export class StoryController {
     try {
       const identifier = req.params.id as string;
       const story = await StoryService.getStoryById(identifier);
+
+      if (story.moderationStatus !== 'approved') {
+        let userId: string | null = null;
+        let userRole: string = 'guest';
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+          const token = authHeader.substring(7);
+          try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as any;
+            userId = decoded.id;
+            userRole = decoded.role;
+          } catch (e) {}
+        }
+
+        if (userRole !== 'admin' && story.uploaderId !== userId) {
+          return res.status(403).json({ success: false, message: 'Bạn không có quyền xem truyện chưa xuất bản' });
+        }
+      }
       
       res.status(200).json({
         success: true,

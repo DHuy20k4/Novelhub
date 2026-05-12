@@ -7,6 +7,7 @@ export const getStoriesQuerySchema = z.object({
   categories: z.string().optional(), // VD: "action,romance"
   uploaderId: z.string().uuid().optional(),
   sortBy: z.enum(['newest', 'updated', 'topView', 'topRate']).default('newest'),
+  status: z.enum(['draft', 'pending', 'approved', 'rejected']).optional(),
 });
 
 export const createStorySchema = z.object({
@@ -22,7 +23,7 @@ export const updateStorySchema = z.object({
   slug: z.string().min(1).max(255).optional(),
   summary: z.string().optional(),
   coverUrl: z.string().url().optional(),
-  moderationStatus: z.enum(['draft', 'published', 'rejected']).optional(),
+  moderationStatus: z.enum(['draft', 'pending', 'approved', 'rejected']).optional(),
   writingStatus: z.enum(['ongoing', 'completed', 'dropped']).optional(),
   categoryIds: z.array(z.string().uuid()).optional(),
 }).strict();

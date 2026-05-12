@@ -30,6 +30,10 @@ export class StoryService {
       whereClause.uploaderId = query.uploaderId;
     }
 
+    if (query.status) {
+      whereClause.moderationStatus = query.status;
+    }
+
     let orderByClause: any = {};
     switch (sortBy) {
       case 'updated':
@@ -127,6 +131,7 @@ export class StoryService {
       data: {
         ...storyData,
         uploaderId,
+        moderationStatus: 'pending', // Mặc định chuyển sang chờ duyệt thay vì draft
         categories: {
           create: categoryIds.map((id) => ({
             categoryId: id,
