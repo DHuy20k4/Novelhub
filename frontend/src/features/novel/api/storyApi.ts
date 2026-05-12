@@ -51,6 +51,7 @@ export const storyApi = {
     search?: string;
     categories?: string;
     uploaderId?: string;
+    status?: string;
   }): Promise<GetStoriesResponse> => {
     return axiosClient.get("/stories", { params });
   },
@@ -71,5 +72,9 @@ export const storyApi = {
     categoryIds: string[];
   }): Promise<{ success: boolean; message: string; data: Story }> => {
     return axiosClient.post("/stories", data);
+  },
+
+  updateStoryStatus: (id: string, moderationStatus: "approved" | "rejected"): Promise<{ success: boolean; message: string }> => {
+    return axiosClient.put(`/stories/${id}`, { moderationStatus });
   },
 };

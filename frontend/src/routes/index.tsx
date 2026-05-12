@@ -8,12 +8,14 @@ import { LoginPage } from "@/pages/auth/LoginPage"
 import { RegisterPage } from "@/pages/auth/RegisterPage"
 import { CreateStoryPage } from "@/pages/creator/CreateStoryPage"
 import { Categories } from "@/pages/Categories"
+import { SearchPage } from "@/pages/SearchPage"
 import { StudioPage } from "@/pages/creator/StudioPage"
 import { ManageChaptersPage } from "@/pages/creator/ManageChaptersPage"
 import { ChapterFormPage } from "@/pages/creator/ChapterFormPage"
 import { AdminDashboard } from "@/pages/admin/AdminDashboard"
 import { AdminCategories } from "@/pages/admin/AdminCategories"
 import { AdminUsers } from "@/pages/admin/AdminUsers"
+import { AdminStories } from "@/pages/admin/AdminStories"
 import { ProfilePage } from "@/pages/profile/ProfilePage"
 import { StoryDetailPage } from "@/pages/StoryDetailPage"
 import { ChapterReadingPage } from "@/pages/ChapterReadingPage"
@@ -27,6 +29,7 @@ export function AppRoutes() {
         {/* Public routes */}
         <Route index element={<Home />} />
         <Route path="categories" element={<Categories />} />
+        <Route path="search" element={<SearchPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
         <Route path="story/:slug" element={<StoryDetailPage />} />
@@ -50,6 +53,7 @@ export function AppRoutes() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="categories" element={<AdminCategories />} />
+          <Route path="stories" element={<AdminStories />} />
           <Route path="users" element={<AdminUsers />} />
         </Route>
       </Route>

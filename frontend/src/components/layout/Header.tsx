@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom"
+import { useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
 import { Search, User } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
@@ -18,6 +19,15 @@ import { useAuthStore } from "@/store/authStore"
 export function Header() {
   const { user, logout } = useAuthStore()
   const isLoggedIn = !!user
+  const navigate = useNavigate()
+  const [searchQuery, setSearchQuery] = useState("")
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -48,14 +58,16 @@ export function Header() {
 
         {/* Center: Search Bar */}
         <div className="hidden md:flex flex-1 items-center justify-center px-6 max-w-md">
-          <div className="relative w-full">
+          <form onSubmit={handleSearch} className="relative w-full">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Tìm kiếm truyện, tác giả..."
               className="w-full pl-9 bg-muted/50 border-none focus-visible:ring-1 focus-visible:bg-background"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
-          </div>
+          </form>
         </div>
 
         {/* Right: Actions */}
@@ -88,6 +100,11 @@ export function Header() {
                   </div>
                 </div>
                 <DropdownMenuSeparator />
+                {user?.role === 'admin' && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin">Trang quản trị (Admin)</Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem asChild>
                   <Link to="/profile">Hồ sơ cá nhân</Link>
                 </DropdownMenuItem>
