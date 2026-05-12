@@ -110,7 +110,7 @@ export function ProfilePage() {
         // Sau khi upload thành công, gửi update profile
         updateMutation.mutate({ avatarUrl: uploadRes.url })
       }
-    } catch {
+    } catch (error) {
       toast.error("Upload ảnh thất bại")
     } finally {
       setIsUploading(false)
@@ -258,12 +258,12 @@ export function ProfilePage() {
                   {/* Readonly fields */}
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <FormLabel>Tên đăng nhập (Username)</FormLabel>
+                      <label className="text-sm font-medium leading-none">Tên đăng nhập (Username)</label>
                       <Input value={profile?.username || ""} disabled className="bg-muted" />
                     </div>
 
                     <div className="space-y-2">
-                      <FormLabel>Địa chỉ Email</FormLabel>
+                      <label className="text-sm font-medium leading-none">Địa chỉ Email</label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input value={authUser?.email || ""} disabled className="pl-9 bg-muted" />
